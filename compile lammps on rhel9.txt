@@ -1,0 +1,40 @@
+# Install zlib locally from GitHub
+wget https://github.com/madler/zlib/archive/refs/tags/v1.2.13.tar.gz -O zlib-1.2.13.tar.gz
+tar -xzvf zlib-1.2.13.tar.gz
+cd zlib-1.2.13
+./configure --prefix=$HOME/zlib
+make
+make install
+
+# Set environment variables for zlib
+export ZLIB_HOME=$HOME/zlib
+export CPATH=$ZLIB_HOME/include:$CPATH
+export LIBRARY_PATH=$ZLIB_HOME/lib:$LIBRARY_PATH
+export LD_LIBRARY_PATH=$ZLIB_HOME/lib:$LD_LIBRARY_PATH
+
+# Clone LAMMPS (if not already done)
+git clone -b stable https://github.com/lammps/lammps.git LAMMPS_dir
+cd LAMMPS_dir/src/
+
+# Purge and enable packages
+make purge
+make yes-COMPRESS
+make yes-manybody
+make yes-kspace
+make yes-rigid
+make yes-replica
+make yes-molecule
+make yes-class2
+make yes-misc
+make yes-EXTRA-COMPUTE
+
+# Modify Makefile.mpi to include zlib paths
+nano src/MAKE/OPTIONS/Makefile.mpi
+CC = mpicc
+CCFLAGS = -g -O3 -std=c++11 -I$ZLIB_HOME/include
+LINK = mpicxx
+LINKFLAGS = -g -O -L$ZLIB_HOME/lib
+LIB = -L$FFTW_HOME/lib -lfftw3 -L$HOME/openmpi/lib -lmpi -lz
+
+# Compile LAMMPS
+make mpi
