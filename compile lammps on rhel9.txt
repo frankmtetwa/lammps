@@ -1,4 +1,4 @@
-# Install zlib locally from GitHub
+# Install zlib locally from GitHub (if not already installed)
 wget https://github.com/madler/zlib/archive/refs/tags/v1.2.13.tar.gz -O zlib-1.2.13.tar.gz
 tar -xzvf zlib-1.2.13.tar.gz
 cd zlib-1.2.13
